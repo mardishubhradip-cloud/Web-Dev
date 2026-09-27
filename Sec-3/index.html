@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visva-Bharati - Student Marks Entry</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo-container">
+            <div class="logo-circle">VB</div>
+            <div>
+                <h1>Visva-Bharati</h1>
+                <p>Samarth eGov Student Portal</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Student Marks Entry Form</h2>
+                <p>Enter details for 3 subjects to generate the official marksheet</p>
+            </div>
+            
+            <form id="marksForm" onsubmit="handleFormSubmit(event)">
+                <div class="section-title">Personal & Academic Details</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="studentName">Student Full Name</label>
+                        <input type="text" id="studentName" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rollNo">Roll / Enrollment No.</label>
+                        <input type="text" id="rollNo" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="program">Program / Course</label>
+                        <input type="text" id="program" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semester">Semester</label>
+                        <select id="semester" required>
+                            <option value="">Select Semester</option>
+                            <option value="Semester I">Semester I</option>
+                            <option value="Semester II">Semester II</option>
+                            <option value="Semester III">Semester III</option>
+                            <option value="Semester IV">Semester IV</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title">Subject Marks (Max 100 per subject)</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sub1Name">Subject 1 Name</label>
+                        <input type="text" id="sub1Name" value="Computer Organization and Architecture" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sub1Marks">Subject 1 Marks</label>
+                        <input type="number" id="sub1Marks" min="0" max="100" placeholder="0 - 100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sub2Name">Subject 2 Name</label>
+                        <input type="text" id="sub2Name" value="Design and Analysis of Algorithms" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sub2Marks">Subject 2 Marks</label>
+                        <input type="number" id="sub2Marks" min="0" max="100" placeholder="0 - 100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sub3Name">Subject 3 Name</label>
+                        <input type="text" id="sub3Name" value="Web Development" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sub3Marks">Subject 3 Marks</label>
+                        <input type="number" id="sub3Marks" min="0" max="100" placeholder="0 - 100" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Generate Marksheet &rarr;</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; Visva-Bharati University | Samarth eGov Portal Reference</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

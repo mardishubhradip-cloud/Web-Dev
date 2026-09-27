@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visva-Bharati - Official Marksheet</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body onload="loadMarksheet()">
+    <header class="navbar no-print">
+        <div class="logo-container">
+            <div class="logo-circle">VB</div>
+            <div>
+                <h1>Visva-Bharati</h1>
+                <p>Samarth eGov Student Portal</p>
+            </div>
+        </div>
+        <div>
+            <a href="index.html" class="btn btn-outline">← Back to Form</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card marksheet-card">
+            <div class="marksheet-header">
+                <div class="univ-logo-badge">VB</div>
+                <h2>VISVA-BHARATI UNIVERSITY</h2>
+                <p class="subtitle">Santiniketan, West Bengal - 731235</p>
+                <div class="marksheet-title">STATEMENT OF MARKS</div>
+            </div>
+
+            <!-- Student Info -->
+            <div class="info-grid" id="studentInfoGrid">
+                <!-- Populated dynamically via script.js -->
+            </div>
+
+            <!-- Marks Table -->
+            <div class="table-responsive">
+                <table class="marks-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Subject Title</th>
+                            <th>Max Marks</th>
+                            <th>Marks Obtained</th>
+                            <th>Grade</th>
+                            <th>Grade Point</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marksTableBody">
+                        <!-- Populated dynamically via script.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="summary-box" id="summaryBox">
+                <!-- Populated dynamically via script.js -->
+            </div>
+
+            <!-- Signatures -->
+            <div class="marksheet-footer">
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <p>Prepared By</p>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <p>Checked By</p>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <p>Controller of Examinations</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar no-print">
+            <a href="index.html" class="btn btn-secondary">Enter New Data</a>
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print / Save Marksheet</button>
+        </div>
+    </main>
+
+    <footer class="footer no-print">
+        <p>&copy; Visva-Bharati University | Samarth eGov Portal Reference</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

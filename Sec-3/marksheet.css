@@ -1,0 +1,165 @@
+:root {
+    --vb-maroon: #7A1C1C;
+    --vb-gold: #D4AF37;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: #F8F6F0;
+    color: #111;
+    margin: 0;
+    padding: 20px;
+}
+
+.marksheet-card {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #FFFDF9;
+    padding: 40px;
+    border: 2px solid var(--vb-maroon);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    border-bottom: 2px double var(--vb-maroon);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    color: var(--vb-maroon);
+    font-size: 28px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.header h3 {
+    margin: 4px 0;
+    font-weight: normal;
+    font-size: 15px;
+    color: #444;
+}
+
+.header p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-style: italic;
+    color: #666;
+}
+
+.title-banner {
+    text-align: center;
+    background: var(--vb-maroon);
+    color: white;
+    padding: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.student-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.student-info div span {
+    font-weight: bold;
+    color: var(--vb-maroon);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+th, td {
+    border: 1px solid #B0A8A0;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #F0EAD6;
+    color: var(--vb-maroon);
+    font-weight: bold;
+}
+
+td.left {
+    text-align: left;
+}
+
+.summary-box {
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid var(--vb-maroon);
+    background-color: #FAF5E8;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.footer-sig {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding-top: 20px;
+}
+
+.sig-block {
+    text-align: center;
+    font-size: 13px;
+}
+
+.sig-space {
+    height: 40px;
+}
+
+.actions {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.btn-back {
+    display: inline-block;
+    background-color: #555;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.btn-print {
+    background-color: var(--vb-maroon);
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+@media print {
+    .actions {
+        display: none;
+    }
+    body {
+        background: white;
+        padding: 0;
+    }
+    .marksheet-card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+}
