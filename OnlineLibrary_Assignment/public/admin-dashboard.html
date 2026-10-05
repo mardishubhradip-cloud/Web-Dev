@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Librarian Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header-bar">
+        <h2>Librarian Dashboard</h2>
+        <div>
+            <button id="themeToggleBtn" onclick="toggleTheme()" style="width: auto;">🌙 Dark Mode</button>
+            <button onclick="logout()" class="btn-danger" style="width: auto;">Logout</button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Book -->
+    <div class="card">
+        <h3 id="bookFormTitle">Add New Book</h3>
+        <input type="hidden" id="editBookId">
+        <div class="form-grid">
+            <input type="text" id="bookTitle" placeholder="Title">
+            <input type="text" id="bookAuthor" placeholder="Author">
+            <select id="bookCategory"><option value="">Select Category</option></select>
+            <input type="number" id="bookQuantity" placeholder="Quantity" value="1">
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button id="saveBookBtn" onclick="saveBook()">Save Book</button>
+            <button id="cancelEditBtn" class="btn-secondary" onclick="resetForm()" style="display:none;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Book Inventory -->
+    <div class="card">
+        <h3>Book Inventory</h3>
+        <table>
+            <thead><tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th><th>Copies</th><th>Actions</th></tr></thead>
+            <tbody id="adminBookTable"></tbody>
+        </table>
+    </div>
+
+    <!-- Issue/Return Operations -->
+    <div class="card">
+        <h3>Issue / Return Operations</h3>
+        <div class="form-grid">
+            <div>
+                <h4>Issue Book</h4>
+                <input type="number" id="issueBookId" placeholder="Book ID" style="margin-bottom:8px;">
+                <input type="number" id="issueStudentId" placeholder="Student ID" style="margin-bottom:8px;">
+                <button onclick="issueBook()">Issue Book</button>
+            </div>
+            <div>
+                <h4>Return Book</h4>
+                <input type="number" id="returnIssueId" placeholder="Issue ID" style="margin-bottom:8px;">
+                <button class="btn-secondary" onclick="returnBook()">Return Book</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overdue Report -->
+    <div class="card">
+        <h3>Overdue Books Report</h3>
+        <table>
+            <thead><tr><th>Issue ID</th><th>Book</th><th>Student</th><th>Email</th><th>Due Date</th><th>Overdue</th></tr></thead>
+            <tbody id="overdueTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const admin = JSON.parse(localStorage.getItem('admin'));
+    if (!admin) window.location.href = '/';
+
+    function logout() { localStorage.removeItem('admin'); window.location.href = '/'; }
+
+    async function loadAdminData() {
+        const catRes = await fetch('/api/categories');
+        const cats = await catRes.json();
+        document.getElementById('bookCategory').innerHTML = '<option value="">Select Category</option>' + cats.map(c => `<option value="${c.category_id}">${c.category_name}</option>`).join('');
+
+        const bookRes = await fetch('/api/books/search?limit=100');
+        const bData = await bookRes.json();
+        document.getElementById('adminBookTable').innerHTML = bData.books.map(b => `
+            <tr>
+                <td>${b.book_id}</td><td>${b.title}</td><td>${b.author}</td><td>${b.category_name || 'N/A'}</td><td>${b.quantity}</td>
+                <td>
+                    <button style="width:auto; padding:4px 8px;" onclick="editBook(${b.book_id}, '${b.title}', '${b.author}', '${b.category_id || ''}', ${b.quantity})">Edit</button>
+                    <button class="btn-danger" style="width:auto; padding:4px 8px;" onclick="deleteBook(${b.book_id})">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+
+        const odRes = await fetch('/api/issues/overdue');
+        const odData = await odRes.json();
+        document.getElementById('overdueTable').innerHTML = odData.map(i => `
+            <tr><td>${i.issue_id}</td><td>${i.title}</td><td>${i.student_name}</td><td>${i.email}</td><td>${i.due_date.split('T')[0]}</td><td><span class="badge bg-red">${i.days_overdue} Days</span></td></tr>
+        `).join('');
+    }
+
+    async function saveBook() {
+        const id = document.getElementById('editBookId').value;
+        const title = document.getElementById('bookTitle').value;
+        const author = document.getElementById('bookAuthor').value;
+        const category_id = document.getElementById('bookCategory').value;
+        const quantity = document.getElementById('bookQuantity').value;
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `/api/books/${id}` : '/api/books';
+
+        await fetch(url, { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ title, author, category_id, quantity }) });
+        resetForm();
+        loadAdminData();
+    }
+
+    function editBook(id, title, author, catId, qty) {
+        document.getElementById('editBookId').value = id;
+        document.getElementById('bookTitle').value = title;
+        document.getElementById('bookAuthor').value = author;
+        document.getElementById('bookCategory').value = catId;
+        document.getElementById('bookQuantity').value = qty;
+        document.getElementById('cancelEditBtn').style.display = 'inline-block';
+    }
+
+    function resetForm() {
+        document.getElementById('editBookId').value = '';
+        document.getElementById('bookTitle').value = '';
+        document.getElementById('bookAuthor').value = '';
+        document.getElementById('bookCategory').value = '';
+        document.getElementById('bookQuantity').value = '1';
+        document.getElementById('cancelEditBtn').style.display = 'none';
+    }
+
+    async function deleteBook(id) {
+        if (confirm('Delete book?')) {
+            await fetch(`/api/books/${id}`, { method: 'DELETE' });
+            loadAdminData();
+        }
+    }
+
+    async function issueBook() {
+        const book_id = document.getElementById('issueBookId').value;
+        const student_id = document.getElementById('issueStudentId').value;
+        const res = await fetch('/api/issues', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ book_id, student_id }) });
+        const data = await res.json();
+        alert(data.message || data.error);
+        loadAdminData();
+    }
+
+    async function returnBook() {
+        const id = document.getElementById('returnIssueId').value;
+        const res = await fetch(`/api/issues/${id}/return`, { method: 'PUT' });
+        const data = await res.json();
+        alert(data.message || data.error);
+        loadAdminData();
+    }
+
+    loadAdminData();
+</script>
+</body>
+</html>

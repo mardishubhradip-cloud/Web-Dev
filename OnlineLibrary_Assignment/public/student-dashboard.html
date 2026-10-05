@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header-bar">
+        <h2>Student Portal - Welcome <span id="studentName"></span></h2>
+        <div>
+            <button id="themeToggleBtn" onclick="toggleTheme()" style="width: auto;">🌙 Dark Mode</button>
+            <button onclick="logout()" class="btn-danger" style="width: auto;">Logout</button>
+        </div>
+    </div>
+
+    <!-- Search Books -->
+    <div class="card">
+        <h3>Search Book Catalog</h3>
+        <input type="text" id="searchInput" placeholder="Search by title, author, or category..." onkeyup="resetAndSearch()">
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Title</th><th>Author</th><th>Category</th><th>Availability</th></tr>
+            </thead>
+            <tbody id="catalogTable"></tbody>
+        </table>
+        <div style="text-align: center; margin-top: 10px;">
+            <button id="seeMoreBtn" class="btn-secondary" onclick="loadMoreBooks()" style="display:none; width:auto;">See More Books...</button>
+        </div>
+    </div>
+
+    <!-- My Issued Books -->
+    <div class="card">
+        <h3>My Issued Books & Due Dates</h3>
+        <table>
+            <thead>
+                <tr><th>Issue ID</th><th>Book Title</th><th>Author</th><th>Issue Date</th><th>Due Date</th><th>Status</th></tr>
+            </thead>
+            <tbody id="myIssuesTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = '/';
+    document.getElementById('studentName').innerText = user.name;
+
+    let currentOffset = 0;
+    const limit = 5;
+
+    function logout() { localStorage.removeItem('user'); window.location.href = '/'; }
+
+    function resetAndSearch() {
+        currentOffset = 0;
+        fetchBooks(false);
+    }
+
+    function loadMoreBooks() {
+        currentOffset += limit;
+        fetchBooks(true);
+    }
+
+    async function fetchBooks(isAppend = false) {
+        const query = document.getElementById('searchInput').value;
+        const res = await fetch(`/api/books/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${currentOffset}`);
+        const data = await res.json();
+        const tbody = document.getElementById('catalogTable');
+        if (!isAppend) tbody.innerHTML = '';
+
+        data.books.forEach(b => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${b.book_id}</td><td><strong>${b.title}</strong></td><td>${b.author}</td><td>${b.category_name || 'General'}</td><td><span class="badge ${b.quantity > 0 ? 'bg-green' : 'bg-red'}">${b.quantity > 0 ? 'Available (' + b.quantity + ')' : 'Out of Stock'}</span></td>`;
+            tbody.appendChild(row);
+        });
+        document.getElementById('seeMoreBtn').style.display = data.hasMore ? 'inline-block' : 'none';
+    }
+
+    async function loadMyIssues() {
+        const res = await fetch(`/api/students/${user.student_id}/issues`);
+        const issues = await res.json();
+        const tbody = document.getElementById('myIssuesTable');
+
+        if (issues.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No books issued yet.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = issues.map(i => {
+            let status = i.return_date ? `<span class="badge bg-gray">Returned</span>` : 
+                        i.days_remaining < 0 ? `<span class="badge bg-red">Overdue by ${Math.abs(i.days_remaining)} days</span>` : 
+                        `<span class="badge bg-orange">Due in ${i.days_remaining} days</span>`;
+            return `<tr><td>${i.issue_id}</td><td><strong>${i.title}</strong></td><td>${i.author}</td><td>${i.issue_date.split('T')[0]}</td><td>${i.due_date.split('T')[0]}</td><td>${status}</td></tr>`;
+        }).join('');
+    }
+
+    resetAndSearch();
+    loadMyIssues();
+</script>
+</body>
+</html>

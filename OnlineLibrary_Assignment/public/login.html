@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Library System - Login</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+<div class="container" style="max-width: 450px; margin-top: 50px;">
+    <div class="header-bar">
+        <h2>Library Portal</h2>
+        <button id="themeToggleBtn" onclick="toggleTheme()" style="width: auto;">🌙 Dark Mode</button>
+    </div>
+
+    <div class="tab-nav">
+        <button id="tabStudentBtn" class="active" onclick="switchForm('student')">Student Login</button>
+        <button id="tabRegisterBtn" onclick="switchForm('register')">Register</button>
+        <button id="tabAdminBtn" onclick="switchForm('admin')">Admin Login</button>
+    </div>
+
+    <!-- Student Login -->
+    <div id="studentForm" class="card">
+        <h3>Student Login</h3>
+        <input type="email" id="sEmail" placeholder="Email" style="margin-bottom:10px;">
+        <input type="password" id="sPassword" placeholder="Password (Default: student123)" style="margin-bottom:10px;">
+        <button onclick="loginStudent()">Login as Student</button>
+    </div>
+
+    <!-- Student Register -->
+    <div id="registerForm" class="card" style="display:none;">
+        <h3>Register New Student</h3>
+        <input type="text" id="rName" placeholder="Full Name" style="margin-bottom:10px;">
+        <input type="email" id="rEmail" placeholder="Email Address" style="margin-bottom:10px;">
+        <input type="password" id="rPassword" placeholder="Create Password" style="margin-bottom:10px;">
+        <button onclick="registerStudent()">Register Account</button>
+    </div>
+
+    <!-- Admin Login -->
+    <div id="adminForm" class="card" style="display:none;">
+        <h3>Librarian / Admin Login</h3>
+        <input type="text" id="aUsername" placeholder="Username (admin)" style="margin-bottom:10px;">
+        <input type="password" id="aPassword" placeholder="Password (admin123)" style="margin-bottom:10px;">
+        <button onclick="loginAdmin()">Login as Admin</button>
+    </div>
+</div>
+
+<script>
+function switchForm(type) {
+    document.getElementById('studentForm').style.display = type === 'student' ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = type === 'register' ? 'block' : 'none';
+    document.getElementById('adminForm').style.display = type === 'admin' ? 'block' : 'none';
+    
+    document.getElementById('tabStudentBtn').className = type === 'student' ? 'active' : '';
+    document.getElementById('tabRegisterBtn').className = type === 'register' ? 'active' : '';
+    document.getElementById('tabAdminBtn').className = type === 'admin' ? 'active' : '';
+}
+
+async function loginStudent() {
+    const email = document.getElementById('sEmail').value;
+    const password = document.getElementById('sPassword').value;
+    const res = await fetch('/api/auth/student/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = '/student-dashboard';
+    } else alert(data.error);
+}
+
+async function registerStudent() {
+    const name = document.getElementById('rName').value;
+    const email = document.getElementById('rEmail').value;
+    const password = document.getElementById('rPassword').value;
+    const res = await fetch('/api/auth/student/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    alert(data.message || data.error);
+    if (res.ok) switchForm('student');
+}
+
+async function loginAdmin() {
+    const username = document.getElementById('aUsername').value;
+    const password = document.getElementById('aPassword').value;
+    const res = await fetch('/api/auth/admin/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        localStorage.setItem('admin', JSON.stringify(data.user));
+        window.location.href = '/admin-dashboard';
+    } else alert(data.error);
+}
+</script>
+</body>
+</html>
